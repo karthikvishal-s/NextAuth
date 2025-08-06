@@ -1,9 +1,12 @@
+"use client";
+
+
 import React from 'react'
 
 const MemberClient = () => {
   return (
     <div>
-      Member
+      MemberClient
     </div>
   )
 }
