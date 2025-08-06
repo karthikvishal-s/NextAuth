@@ -37,7 +37,7 @@
     };
     return(<>
     <form onSubmit={handleSubmit} method="post" className="flex flex-col gap-4 p-4">
-        <h1>Create new user</h1>
+        <h1>Create new user</h1><br></br>
 
         <label>Name</label>
         <input id="name"
@@ -45,7 +45,7 @@
          onChange={handleChange}
          value={formData.name} 
          className="border border-gray-300 p-2 rounded-md" />
-
+<br></br>
 <label>Email</label>
         <input id="email"
          name="email"

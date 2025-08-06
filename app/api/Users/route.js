@@ -8,7 +8,7 @@ export async function POST(req){
         const userData = body.formData
 
         if(!userData?.email || !userData.password){
-            return NextResponse.json({error: "All Fields are required",err}, {status: 400});
+            return NextResponse.json({error: "All Fields are required"}, {status: 400});
         }
 
         // Check for duplicate email
@@ -29,7 +29,7 @@ export async function POST(req){
     return NextResponse.json({message: "User created successfully"}, {status: 201});
 
     } catch (error){
-        console.log(err)
-        return NextResponse.json({error: "Error",err}, {status: 500});
+        console.log(error)
+        return NextResponse.json({error: "Error",error}, {status: 500});
     }
 }
