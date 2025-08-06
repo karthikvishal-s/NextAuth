@@ -7,12 +7,16 @@ export default withAuth(
         console.log(req.nextUrl.pathname);
         console.log(req.nextauth.token.role);
         
-        if(res.nextUrl.pathname.startsWith("/CreateUser") && 
+        if(req.nextUrl.pathname.startsWith("/CreateUser") && 
         req.nextauth.token.role !== "Admin"){
 
-        return NextResponse.redirect(new URL("/Denied", req.url));
+        return NextResponse.rewrite(new URL("/Denied", req.url));
+
         }
-    }
+    },{
+    callbacks:{
+        authorized:({token}) => !!token,
+    }}
 )
 
 export const config = { matcher: ["/CreateUser"]}
