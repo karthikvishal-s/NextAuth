@@ -1,6 +1,6 @@
 import React from 'react'
 import { getServerSession } from 'next-auth';
-import { redirect } from 'next/dist/server/api-utils';
+import { redirect } from 'next/navigation';
 import { options } from '../api/auth/[...nextauth]/options';
 const Member = async() => {
   const session =await getServerSession(options);
