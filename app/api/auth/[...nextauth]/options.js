@@ -1,3 +1,15 @@
+
+// https://github.com/settings/developers for github Oauth..
+
+
+
+
+
+
+
+
+
+
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 
