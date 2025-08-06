@@ -1,6 +1,4 @@
 
-
-
 import {withAuth} from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
@@ -9,8 +7,10 @@ export default withAuth(
         console.log(req.nextUrl.pathname);
         console.log(req.nextauth.token.role);
         
-        if(res.nextUrl.pathname.startsWith("/CreateUser") && req.nextauth.token.role !== "Admin"){
-            return NextResponse.redirect(new URL("/Denied", req.url));
+        if(res.nextUrl.pathname.startsWith("/CreateUser") && 
+        req.nextauth.token.role !== "Admin"){
+
+        return NextResponse.redirect(new URL("/Denied", req.url));
         }
     }
 )
