@@ -2,19 +2,24 @@
 
 import { getProviders, signIn, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Signin() {
   const { data: session, status } = useSession();
+  const router = useRouter();
+
   const [providers, setProviders] = useState(null);
   const [loaded, setLoaded] = useState(false);
-
-  const isAuthenticated = status === "authenticated";
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     getProviders().then((prov) => setProviders(prov));
     setLoaded(true);
   }, []);
 
+  // Session loading state
   if (status === "loading") {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -23,13 +28,114 @@ export default function Signin() {
     );
   }
 
+  // If already signed in, redirect or show message
+  if (status === "authenticated" && session?.user) {
+    router.push("/"); // Change to your dashboard/home
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-green-500 text-2xl">
+          You are already signed in as {session.user.email}
+        </p>
+      </div>
+    );
+  }
+
+  const getButtonConfig = (providerId) => {
+    switch (providerId) {
+      case "google":
+        return {
+          label: "Sign in with Google",
+          bg: "bg-white text-black hover:bg-gray-100",
+          icon: "/google.png",
+        };
+      case "github":
+        return {
+          label: "Sign in with GitHub",
+          bg: "bg-black text-white hover:bg-gray-900",
+          icon: "/github.png",
+        };
+      case "credentials":
+        return {
+          label: "Sign in with Email",
+          bg: "bg-blue-600 text-white hover:bg-blue-700",
+          icon: "/email.png",
+        };
+      default:
+        return {
+          label: `Sign in with ${providerId}`,
+          bg: "bg-gray-500 text-white hover:bg-gray-600",
+          icon: "/default.png",
+        };
+    }
+  };
+
+  const handleCredentialsLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    const res = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+      callbackUrl: "/",
+    });
+
+    if (res?.error) {
+      setError("Invalid email or password");
+    } else {
+      router.push("/");
+    }
+  };
+
   return (
-    <div>
-      {!isAuthenticated ? (
-        !providers ? (
-          <p className="text-black text-lg">Loading sign-in options...</p>
-        ) : (
-          Object.values(providers).map((provider, index) => (
+    <div className="flex flex-col items-center justify-center gap-6 py-20">
+      {status === "unauthenticated" && providers ? (
+        Object.values(providers).map((provider, index) => {
+          const config = getButtonConfig(provider.id);
+
+          if (provider.id === "credentials") {
+            return (
+              <form
+                key={provider.id}
+                onSubmit={handleCredentialsLogin}
+                className={`w-80 p-6 rounded-lg shadow transition-all duration-1000 ease-out ${
+                  loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                }`}
+                style={{ transitionDelay: `${800 + index * 200}ms` }}
+              >
+                <h2 className="text-2xl font-semibold text-center mb-4">
+                  {config.label}
+                </h2>
+                {error && (
+                  <p className="text-red-500 text-sm mb-2 text-center">{error}</p>
+                )}
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full mb-3 px-4 py-2 border rounded-lg focus:outline-none"
+                />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full mb-4 px-4 py-2 border rounded-lg focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  className={`w-full py-2 rounded-lg font-semibold ${config.bg}`}
+                >
+                  Login
+                </button>
+              </form>
+            );
+          }
+
+          return (
             <div
               key={provider.id}
               className={`transition-all duration-1000 ease-out ${
@@ -40,24 +146,24 @@ export default function Signin() {
               <button
                 onClick={() =>
                   signIn(provider.id, {
-                    callbackUrl: "/login",
+                    callbackUrl: "/",
                     prompt: "select_account",
                   })
                 }
-                className="flex items-center bg-yellow-400 text-black px-6 py-3 rounded-full font-rocker text-2xl md:text-4xl shadow hover:scale-105 transition-all duration-300"
+                className={`flex items-center gap-4 px-6 py-3 rounded-full font-semibold text-lg shadow hover:scale-105 transition-all duration-300 ${config.bg}`}
               >
                 <img
-                  src="/google.png"
-                  alt="Google"
-                  className="h-10 w-10 mr-4 bg-white p-2 rounded-full"
+                  src={config.icon}
+                  alt={provider.name}
+                  className="h-8 w-8 rounded-full"
                 />
-                Join the Roost
+                {config.label}
               </button>
             </div>
-          ))
-        )
+          );
+        })
       ) : (
-        <>something</>
+        <p className="text-black">Loading sign-in options...</p>
       )}
     </div>
   );
