@@ -3,6 +3,7 @@
 import { getProviders, signIn, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Signin() {
   const { data: session, status } = useSession();
@@ -131,6 +132,13 @@ export default function Signin() {
                 >
                   Login
                 </button>
+                <div>
+                  New User ? <span>
+                    <Link href="/CreateUser" className="text-blue-500 hover:underline">
+                      Create Account
+                    </Link>
+                  </span>
+                </div>
               </form>
             );
           }
