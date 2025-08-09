@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useSession, signOut, signIn } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 export default function Nav() {
   const { data: session, status } = useSession();
@@ -18,7 +19,7 @@ export default function Nav() {
           <Link href="/Public">Public</Link>
 
           {status === "authenticated" ? (
-            <button onClick={() => signOut({ callbackUrl: "/" })}>
+            <button onClick={() => redirect("/logoutsecurity")}>
               Logout
             </button>
           ) : (
